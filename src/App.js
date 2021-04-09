@@ -1,16 +1,33 @@
 import { Component } from 'react';
 import { v4 as uuid } from 'uuid';
 import css from './styles/App.module.scss';
-import config from './json/AppConfig.json';
 import ContactForm from './components/ContactForm';
 import ContactList from './components/ContactList';
 import Filter from './components/Filter';
 
 class App extends Component {
     state = {
-        contacts: config.INIT_CONTACTS,
+        contacts: [],
         filter: '',
     };
+
+    componentDidMount() {
+        // Получаем контакты из localStorage
+        const savedContacts = JSON.parse(localStorage.getItem('contacts'));
+        if (savedContacts) {
+            this.setState({ contacts: savedContacts });
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        // Сохраняем контакты в localStorage
+        if (prevState.contacts !== this.state.contacts) {
+            localStorage.setItem(
+                'contacts',
+                JSON.stringify(this.state.contacts),
+            );
+        }
+    }
 
     addContact = ({ name, number }) => {
         if (this.isContactExists(name)) {
